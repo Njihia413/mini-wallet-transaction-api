@@ -10,30 +10,28 @@ if (!dbUrl) {
   console.error('❌ Neither DATABASE_URL nor DATABASE_PUBLIC_URL is defined!');
 } else {
   dbUrl = dbUrl.trim();
+  const isInternal = dbUrl.includes('.internal');
   
-  // Advanced Diagnostics
-  const censoredUrl = dbUrl.replace(/:([^@]+)@/, ':****@');
-  console.log(`📡 DB URL Info: Length=${dbUrl.length}`);
-  console.log(`📡 Censored Structure: ${censoredUrl.substring(0, 40)}...${censoredUrl.substring(censoredUrl.length - 20)}`);
+  // Advanced Diagnostics (Safe)
+  const censored = dbUrl.replace(/\/\/[^:]+:([^@]+)@/, '//user:****@');
+  console.log(`📡 DB URL Info: Internal=${isInternal}, Length=${dbUrl.length}`);
+  console.log(`📡 Censored URL: ${censored.substring(0, 40)}...`);
   
   try {
     const parsed = new URL(dbUrl);
-    if (!parsed.hostname) {
-      console.error('❌ ERROR: Database URL is missing the HOSTNAME (it looks like user:pass@:port/db)');
-      console.error('💡 TIP: If using a public Railway URL, ensure you have clicked "Generate Domain" in your Postgres service Settings.');
-    } else {
-      console.log(`✅ URL host detected: ${parsed.hostname}`);
-    }
+    console.log(`✅ URL host detected: ${parsed.hostname}`);
   } catch (e) {
-    console.error('❌ ERROR: The Database URL is malformed and cannot be parsed by Node.js.');
-    console.error('💡 TIP: Check for missing slashes (e.g., postgresql:/ instead of postgresql://) or extra symbols.');
+    console.error('❌ ERROR: URL is malformed');
   }
 }
 
 const pool = new Pool({
   connectionString: dbUrl,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  connectionTimeoutMillis: 15000,
+  // Disable SSL for internal Railway connections, enable for public ones
+  ssl: (process.env.NODE_ENV === 'production' && !dbUrl?.includes('.internal')) 
+    ? { rejectUnauthorized: false } 
+    : false,
+  connectionTimeoutMillis: 20000,
   idleTimeoutMillis: 30000,
 });
 
