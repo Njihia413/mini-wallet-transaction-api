@@ -10,6 +10,8 @@ import { AppError } from './utils/errors';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
+import path from 'path';
+
 dotenv.config();
 
 const app = express();
@@ -83,6 +85,15 @@ const PORT = process.env.PORT || 5000;
  *               type: string
  */
 
+// Use absolute paths for Swagger apis to ensure endpoints are discovered
+const routesPath = process.env.NODE_ENV === 'production'
+  ? path.resolve(__dirname, './routes/*.js')
+  : path.resolve(__dirname, './routes/*.ts');
+
+const indexPath = process.env.NODE_ENV === 'production'
+  ? path.resolve(__dirname, './index.js')
+  : path.resolve(__dirname, './index.ts');
+
 const swaggerOptions = {
   definition: {
     openapi: '3.0.0',
@@ -98,16 +109,13 @@ const swaggerOptions = {
           : 'http://localhost:5000',
         description: process.env.NODE_ENV === 'production' ? 'Production' : 'Development',
       },
+      {
+        url: 'http://0.0.0.0:5000',
+        description: 'Local (0.0.0.0)',
+      },
     ],
   },
-  apis: [
-    process.env.NODE_ENV === 'production' 
-      ? './dist/routes/*.js' 
-      : './src/routes/*.ts', 
-    process.env.NODE_ENV === 'production'
-      ? './dist/index.js'
-      : './src/index.ts'
-  ],
+  apis: [routesPath, indexPath],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
@@ -116,7 +124,22 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // ─── Middleware ───────────────────────────────────────
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      process.env.FRONTEND_URL || 'http://localhost:3000',
+      'http://localhost:5000',
+      'http://0.0.0.0:5000',
+    ];
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());
