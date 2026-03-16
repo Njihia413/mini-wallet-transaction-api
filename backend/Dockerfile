@@ -9,10 +9,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Copy source and config files
-COPY tsconfig.json ./
-COPY src ./src
-COPY sql ./sql
+# Copy all files from the backend directory
+# This ensures all folders (src, sql, etc) are included
+COPY . .
 
 # Build the application
 RUN npm run build
@@ -22,7 +21,7 @@ FROM node:20-slim
 
 WORKDIR /app
 
-# Copy built files and package info
+# Copy built files, package info, and sql migrations
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/sql ./sql
@@ -37,4 +36,4 @@ ENV NODE_ENV=production
 EXPOSE 5000
 
 # Start command
-CMD ["npm", "start"]
+CMD ["node", "dist/index.js"]
