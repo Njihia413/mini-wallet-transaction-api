@@ -6,6 +6,43 @@ import { NotFoundError } from '../utils/errors';
 
 const router = Router();
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Account:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         name:
+ *           type: string
+ *         type:
+ *           type: string
+ *         balance:
+ *           type: number
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *     Error:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: false
+ *         error:
+ *           type: object
+ *           properties:
+ *             code:
+ *               type: string
+ *             message:
+ *               type: string
+ */
+
 // ─── Validation Schemas ──────────────────────────────
 
 const createAccountSchema = z.object({
@@ -23,6 +60,44 @@ const createAccountSchema = z.object({
 
 // ─── POST /api/accounts ─ Create a new account ──────
 
+/**
+ * @openapi
+ * /api/accounts:
+ *   post:
+ *     summary: Create a new wallet account
+ *     tags: [Accounts]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name]
+ *             properties:
+ *               name:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *                 enum: [SAVINGS, BUSINESS, INVESTMENT]
+ *     responses:
+ *       201:
+ *         description: Account created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Account'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post(
   '/',
   validateBody(createAccountSchema),
@@ -57,6 +132,29 @@ router.post(
 
 // ─── GET /api/accounts ─ List all accounts ───────────
 
+/**
+ * @openapi
+ * /api/accounts:
+ *   get:
+ *     summary: List all accounts
+ *     tags: [Accounts]
+ *     responses:
+ *       200:
+ *         description: List of accounts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Account'
+ *                 count:
+ *                   type: integer
+ */
 router.get(
   '/',
   async (_req: Request, res: Response, next: NextFunction) => {
@@ -89,6 +187,38 @@ router.get(
 
 // ─── GET /api/accounts/:id ─ Get account details ────
 
+/**
+ * @openapi
+ * /api/accounts/{id}:
+ *   get:
+ *     summary: Get details for a specific account
+ *     tags: [Accounts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Account details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Account'
+ *       404:
+ *         description: Account not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get(
   '/:id',
   async (req: Request, res: Response, next: NextFunction) => {
