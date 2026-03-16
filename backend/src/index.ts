@@ -27,8 +27,10 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:5000',
-        description: 'Development server',
+        url: process.env.RAILWAY_PUBLIC_DOMAIN 
+          ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` 
+          : 'http://localhost:5000',
+        description: process.env.NODE_ENV === 'production' ? 'Production' : 'Development',
       },
     ],
   },
@@ -151,19 +153,42 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-// ─── Start Server ────────────────────────────────────
+/// ─── Start Server ────────────────────────────────────
+async function testConnectionWithRetry(retries = 5, delayMs = 3000): Promise<void> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    console.log(`⏳ DB connection attempt ${attempt}/${retries}...`);
+    try {
+      await testConnection();
+      return;
+    } catch (err: any) {
+      console.error(`❌ Attempt ${attempt} failed: ${err.message}`);
+      if (attempt < retries) {
+        console.log(`⏸ Retrying in ${delayMs / 1000}s...`);
+        await new Promise(res => setTimeout(res, delayMs));
+      } else {
+        throw err;
+      }
+    }
+  }
+}
 
 async function start() {
-  try {
-    await testConnection();
-    await runMigrations();
-
+  // Bind to port FIRST so Railway sees the service as alive
+  await new Promise<void>((resolve) => {
     app.listen(Number(PORT), '0.0.0.0', () => {
       console.log(`\n🚀 Mini Wallet API running on http://0.0.0.0:${PORT}`);
       console.log(`📋 Health check: http://0.0.0.0:${PORT}/api/health\n`);
+      resolve();
     });
+  });
+
+  // Then connect to DB + run migrations in background
+  try {
+    await testConnectionWithRetry();
+    await runMigrations();
+    console.log('✅ DB ready and migrations complete');
   } catch (err) {
-    console.error('Failed to start server:', err);
+    console.error('💥 Failed to initialize DB after retries:', err);
     process.exit(1);
   }
 }
