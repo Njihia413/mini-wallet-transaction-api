@@ -15,6 +15,20 @@ export async function runMigrations(): Promise<void> {
   }
 }
 
+export async function resetDatabase(): Promise<void> {
+  try {
+    console.log('🔄 Resetting database...');
+    // Drop all existing tables and triggers
+    await pool.query('DROP TABLE IF EXISTS transactions, accounts CASCADE;');
+    // Re-run the initial schema
+    await runMigrations();
+    console.log('✨ Database reset successfully');
+  } catch (err) {
+    console.error('❌ Database reset failed:', err);
+    throw err;
+  }
+}
+
 // Run directly if called as a script
 if (require.main === module) {
   runMigrations()
