@@ -10,17 +10,24 @@ if (!dbUrl) {
   console.error('❌ Neither DATABASE_URL nor DATABASE_PUBLIC_URL is defined!');
 } else {
   dbUrl = dbUrl.trim();
-  const protocolMatch = dbUrl.match(/^[^:]+:\/\//);
-  const protocol = protocolMatch ? protocolMatch[0] : 'unknown';
   
-  // Log censored info for debugging
+  // Advanced Diagnostics
   const censoredUrl = dbUrl.replace(/:([^@]+)@/, ':****@');
-  console.log(`📡 DB URL Info: Protocol=${protocol}, Length=${dbUrl.length}`);
-  console.log(`📡 Censored URL: ${censoredUrl.substring(0, 30)}...${censoredUrl.substring(censoredUrl.length - 15)}`);
+  console.log(`📡 DB URL Info: Length=${dbUrl.length}`);
+  console.log(`📡 Censored Structure: ${censoredUrl.substring(0, 40)}...${censoredUrl.substring(censoredUrl.length - 20)}`);
   
-  // Check for common issues
-  if (dbUrl.includes(' ')) console.warn('⚠️ WARNING: Database URL contains spaces!');
-  if (dbUrl.includes('\n') || dbUrl.includes('\r')) console.warn('⚠️ WARNING: Database URL contains newlines!');
+  try {
+    const parsed = new URL(dbUrl);
+    if (!parsed.hostname) {
+      console.error('❌ ERROR: Database URL is missing the HOSTNAME (it looks like user:pass@:port/db)');
+      console.error('💡 TIP: If using a public Railway URL, ensure you have clicked "Generate Domain" in your Postgres service Settings.');
+    } else {
+      console.log(`✅ URL host detected: ${parsed.hostname}`);
+    }
+  } catch (e) {
+    console.error('❌ ERROR: The Database URL is malformed and cannot be parsed by Node.js.');
+    console.error('💡 TIP: Check for missing slashes (e.g., postgresql:/ instead of postgresql://) or extra symbols.');
+  }
 }
 
 const pool = new Pool({
