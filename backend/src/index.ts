@@ -6,11 +6,36 @@ import { runMigrations } from './db/migrate';
 import accountRoutes from './routes/accounts';
 import transactionRoutes from './routes/transactions';
 import { AppError } from './utils/errors';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// ─── Swagger Configuration ────────────────────────────
+
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Mini Wallet Transaction API',
+      version: '1.0.0',
+      description: 'A RESTful API for managing wallet accounts and transactions',
+    },
+    servers: [
+      {
+        url: 'http://localhost:5000',
+        description: 'Development server',
+      },
+    ],
+  },
+  apis: ['./src/routes/*.ts', './src/index.ts'],
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ─── Middleware ───────────────────────────────────────
 
@@ -22,6 +47,30 @@ app.use(express.json());
 
 // ─── Health Check ────────────────────────────────────
 
+/**
+ * @openapi
+ * /api/health:
+ *   get:
+ *     summary: Check API health status
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: API is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ok
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 service:
+ *                   type: string
+ *                   example: Mini Wallet Transaction API
+ */
 app.get('/api/health', (_req: Request, res: Response) => {
   res.json({
     status: 'ok',
