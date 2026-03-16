@@ -5,6 +5,7 @@ import { testConnection } from './db/pool';
 import { runMigrations } from './db/migrate';
 import accountRoutes from './routes/accounts';
 import transactionRoutes from './routes/transactions';
+import debugRoutes from './routes/debug';
 import { AppError } from './utils/errors';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -82,6 +83,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
 // ─── Routes ──────────────────────────────────────────
 
 app.use('/api/accounts', accountRoutes);
+app.use('/api/debug', debugRoutes);
 app.use('/api', transactionRoutes);
 
 // ─── 404 Handler ─────────────────────────────────────
