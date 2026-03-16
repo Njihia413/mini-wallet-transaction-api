@@ -8,7 +8,7 @@ const router = Router();
  * /api/debug/reset:
  *   post:
  *     summary: Reset the database (Delete all data and re-seed)
- *     description: This endpoint drops all tables and re-runs the initial schema. WARNING: This will delete all existing data.
+ *     description: 'This endpoint drops all tables and re-runs the initial schema. WARNING: This will delete all existing data.'
  *     tags: [Debug]
  *     responses:
  *       200:
