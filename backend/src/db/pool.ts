@@ -4,15 +4,19 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 console.log('🔌 Initializing Database Pool...');
-if (!process.env.DATABASE_URL) {
-  console.error('❌ DATABASE_URL is not defined!');
+const dbUrl = process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL;
+
+if (!dbUrl) {
+  console.error('❌ Neither DATABASE_URL nor DATABASE_PUBLIC_URL is defined!');
+} else {
+  console.log(`📡 Database URL found (length: ${dbUrl.length})`);
 }
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: dbUrl,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  connectionTimeoutMillis: 10000, // Wait up to 10 seconds to connect
-  idleTimeoutMillis: 30000,       // Close idle clients after 30 seconds
+  connectionTimeoutMillis: 10000,
+  idleTimeoutMillis: 30000,
 });
 
 // Log connection errors
