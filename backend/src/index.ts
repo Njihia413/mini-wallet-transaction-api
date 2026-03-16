@@ -32,7 +32,14 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: ['./src/routes/*.ts', './src/index.ts'],
+  apis: [
+    process.env.NODE_ENV === 'production' 
+      ? './dist/routes/*.js' 
+      : './src/routes/*.ts', 
+    process.env.NODE_ENV === 'production'
+      ? './dist/index.js'
+      : './src/index.ts'
+  ],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
@@ -151,9 +158,9 @@ async function start() {
     await testConnection();
     await runMigrations();
 
-    app.listen(PORT, () => {
-      console.log(`\n🚀 Mini Wallet API running on http://localhost:${PORT}`);
-      console.log(`📋 Health check: http://localhost:${PORT}/api/health\n`);
+    app.listen(Number(PORT), '0.0.0.0', () => {
+      console.log(`\n🚀 Mini Wallet API running on http://0.0.0.0:${PORT}`);
+      console.log(`📋 Health check: http://0.0.0.0:${PORT}/api/health\n`);
     });
   } catch (err) {
     console.error('Failed to start server:', err);
