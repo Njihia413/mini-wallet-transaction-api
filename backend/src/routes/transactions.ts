@@ -10,6 +10,42 @@ import {
 
 const router = Router();
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Transaction:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         type:
+ *           type: string
+ *           enum: [DEPOSIT, TRANSFER]
+ *         amount:
+ *           type: number
+ *         description:
+ *           type: string
+ *         fromAccountId:
+ *           type: string
+ *           format: uuid
+ *           nullable: true
+ *         fromAccountName:
+ *           type: string
+ *           nullable: true
+ *         toAccountId:
+ *           type: string
+ *           format: uuid
+ *           nullable: true
+ *         toAccountName:
+ *           type: string
+ *           nullable: true
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ */
+
 // ─── Validation Schemas ──────────────────────────────
 
 const depositSchema = z.object({
@@ -39,6 +75,54 @@ const transactionQuerySchema = z.object({
 
 // ─── POST /api/accounts/:id/deposit ─ Deposit funds ─
 
+/**
+ * @openapi
+ * /api/accounts/{id}/deposit:
+ *   post:
+ *     summary: Deposit funds into an account
+ *     tags: [Transactions]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [amount]
+ *             properties:
+ *               amount:
+ *                 type: number
+ *                 minimum: 1
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Deposit successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     transaction:
+ *                       $ref: '#/components/schemas/Transaction'
+ *                     account:
+ *                       $ref: '#/components/schemas/Account'
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Account not found
+ */
 router.post(
   '/accounts/:id/deposit',
   validateBody(depositSchema),
@@ -113,6 +197,57 @@ router.post(
 
 // ─── POST /api/transfers ─ Transfer between accounts ─
 
+/**
+ * @openapi
+ * /api/transfers:
+ *   post:
+ *     summary: Transfer funds between two accounts
+ *     tags: [Transactions]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [fromAccountId, toAccountId, amount]
+ *             properties:
+ *               fromAccountId:
+ *                 type: string
+ *                 format: uuid
+ *               toAccountId:
+ *                 type: string
+ *                 format: uuid
+ *               amount:
+ *                 type: number
+ *                 minimum: 1
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Transfer successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     transaction:
+ *                       $ref: '#/components/schemas/Transaction'
+ *                     sender:
+ *                       $ref: '#/components/schemas/Account'
+ *                     receiver:
+ *                       $ref: '#/components/schemas/Account'
+ *       400:
+ *         description: Validation error / Same account error
+ *       404:
+ *         description: Account not found
+ *       422:
+ *         description: Insufficient balance
+ */
 router.post(
   '/transfers',
   validateBody(transferSchema),
@@ -228,6 +363,60 @@ router.post(
 
 // ─── GET /api/transactions ─ List transactions ───────
 
+/**
+ * @openapi
+ * /api/transactions:
+ *   get:
+ *     summary: List transaction history
+ *     tags: [Transactions]
+ *     parameters:
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [DEPOSIT, TRANSFER]
+ *       - in: query
+ *         name: accountId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 50
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *           default: 0
+ *     responses:
+ *       200:
+ *         description: List of transactions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Transaction'
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                     limit:
+ *                       type: integer
+ *                     offset:
+ *                       type: integer
+ */
 router.get(
   '/transactions',
   validateQuery(transactionQuerySchema),
