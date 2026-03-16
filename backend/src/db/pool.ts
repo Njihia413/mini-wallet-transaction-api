@@ -30,16 +30,24 @@ pool.on('error', (err) => {
   console.error('💣 Database pool error:', err.message);
 });
 
-export async function testConnection(): Promise<void> {
-  console.log('⏳ Testing database connection...');
-  try {
-    const client = await pool.connect();
-    await client.query('SELECT 1');
-    console.log('✅ Database connection verified');
-    client.release();
-  } catch (err: any) {
-    console.error('❌ Connection failed:', err.message);
-    throw err;
+export async function testConnection(retries = 5, delayMs = 3000): Promise<void> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    console.log(`⏳ DB connection attempt ${attempt}/${retries}...`);
+    try {
+      const client = await pool.connect();
+      await client.query('SELECT 1');
+      console.log('✅ Database connection verified');
+      client.release();
+      return;
+    } catch (err: any) {
+      console.error(`❌ Attempt ${attempt} failed: ${err.message}`);
+      if (attempt < retries) {
+        console.log(`⏸ Retrying in ${delayMs / 1000}s...`);
+        await new Promise(res => setTimeout(res, delayMs));
+      } else {
+        throw err;
+      }
+    }
   }
 }
 
