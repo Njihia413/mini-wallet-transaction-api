@@ -4,12 +4,14 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 console.log('🔌 Initializing Database Pool...');
-const dbUrl = process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL;
+let dbUrl = process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL;
 
 if (!dbUrl) {
   console.error('❌ Neither DATABASE_URL nor DATABASE_PUBLIC_URL is defined!');
 } else {
-  console.log(`📡 Database URL found (length: ${dbUrl.length})`);
+  dbUrl = dbUrl.trim(); // Remove any accidental whitespace
+  const protocol = dbUrl.split('://')[0];
+  console.log(`📡 Database URL protocol: ${protocol}://, length: ${dbUrl.length}`);
 }
 
 const pool = new Pool({
