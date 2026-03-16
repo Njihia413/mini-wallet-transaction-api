@@ -1,22 +1,38 @@
-# Simple Dockerfile for Backend
-FROM node:20-slim
+# Build stage - Standardized for Repository Root Context
+FROM node:20-slim AS builder
 
-# Create and define the application directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy EVERYTHING from the current context
-COPY . .
+# Copy package files from the backend subfolder
+COPY backend/package*.json ./
 
-# Debugging: List files to see if we are in the right place
-RUN ls -la
-
-# Install dependencies and build
+# Install dependencies
 RUN npm install
+
+# Copy the rest of the backend files
+COPY backend/ .
+
+# Build the application
 RUN npm run build
 
-# Prepare for production
+# Production stage
+FROM node:20-slim
+
+WORKDIR /app
+
+# Copy built files and required runtime folders from builder
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/sql ./sql
+
+# Install production dependencies only
+RUN npm install --omit=dev
+
+# Set environment
 ENV NODE_ENV=production
+
+# Expose port (Railway will provide the $PORT env var)
 EXPOSE 5000
 
-# Use the direct path to the built file
+# Start command
 CMD ["node", "dist/index.js"]
