@@ -6,43 +6,6 @@ import { NotFoundError } from '../utils/errors';
 
 const router = Router();
 
-/**
- * @openapi
- * components:
- *   schemas:
- *     Account:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *           format: uuid
- *         name:
- *           type: string
- *         type:
- *           type: string
- *         balance:
- *           type: number
- *         createdAt:
- *           type: string
- *           format: date-time
- *         updatedAt:
- *           type: string
- *           format: date-time
- *     Error:
- *       type: object
- *       properties:
- *         success:
- *           type: boolean
- *           example: false
- *         error:
- *           type: object
- *           properties:
- *             code:
- *               type: string
- *             message:
- *               type: string
- */
-
 // ─── Validation Schemas ──────────────────────────────
 
 const createAccountSchema = z.object({

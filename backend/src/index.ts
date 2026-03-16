@@ -16,6 +16,72 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ─── Swagger Configuration ────────────────────────────
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Account:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         name:
+ *           type: string
+ *         type:
+ *           type: string
+ *         balance:
+ *           type: number
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *     Transaction:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           format: uuid
+ *         type:
+ *           type: string
+ *           enum: [DEPOSIT, TRANSFER]
+ *         amount:
+ *           type: number
+ *         description:
+ *           type: string
+ *         fromAccountId:
+ *           type: string
+ *           format: uuid
+ *           nullable: true
+ *         fromAccountName:
+ *           type: string
+ *           nullable: true
+ *         toAccountId:
+ *           type: string
+ *           format: uuid
+ *           nullable: true
+ *         toAccountName:
+ *           type: string
+ *           nullable: true
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *     Error:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: false
+ *         error:
+ *           type: object
+ *           properties:
+ *             code:
+ *               type: string
+ *             message:
+ *               type: string
+ */
 
 const swaggerOptions = {
   definition: {

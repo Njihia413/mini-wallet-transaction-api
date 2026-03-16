@@ -10,42 +10,6 @@ import {
 
 const router = Router();
 
-/**
- * @openapi
- * components:
- *   schemas:
- *     Transaction:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *           format: uuid
- *         type:
- *           type: string
- *           enum: [DEPOSIT, TRANSFER]
- *         amount:
- *           type: number
- *         description:
- *           type: string
- *         fromAccountId:
- *           type: string
- *           format: uuid
- *           nullable: true
- *         fromAccountName:
- *           type: string
- *           nullable: true
- *         toAccountId:
- *           type: string
- *           format: uuid
- *           nullable: true
- *         toAccountName:
- *           type: string
- *           nullable: true
- *         createdAt:
- *           type: string
- *           format: date-time
- */
-
 // ─── Validation Schemas ──────────────────────────────
 
 const depositSchema = z.object({
