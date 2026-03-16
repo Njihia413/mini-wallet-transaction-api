@@ -65,10 +65,11 @@ export default function DashboardPage() {
     }));
   }, [accounts]);
 
-  const CHART_COLORS = [
-    "var(--chart-1)",
-    "var(--chart-2)",
-  ];
+  const CHART_COLOR_MAP: Record<string, string> = {
+    SAVINGS: "var(--chart-1)",
+    BUSINESS: "var(--chart-2)",
+    INVESTMENT: "var(--chart-3)",
+  };
 
   // Donut chart data: Balance distribution by account type
   const balanceByTypeData = useMemo(() => {
@@ -235,7 +236,10 @@ export default function DashboardPage() {
                     stroke="none"
                   >
                     {balanceByTypeData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % 2]} />
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={CHART_COLOR_MAP[entry.name] || `var(--chart-${(index % 5) + 1})`} 
+                      />
                     ))}
                   </Pie>
                   <Tooltip
