@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowLeftRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { getAccounts, transfer, type Account } from "@/lib/api";
+import { getAccounts, transfer, type Account, type ApiError } from "@/lib/api";
 import { formatCurrency } from "@/lib/format";
 
 export default function TransferPage() {
@@ -68,8 +68,9 @@ export default function TransferPage() {
       setDescription("");
       router.push("/dashboard/transactions");
     } catch (err: unknown) {
-      const error = err as { error?: { message?: string } };
-      toast.error(error?.error?.message || "Transfer failed");
+      const apiError = err as ApiError;
+      const message = apiError?.error?.message || "Transfer failed";
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
