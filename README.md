@@ -2,6 +2,17 @@
 
 A full-stack wallet management application built for the **VunaPay Technical Assessment**. Features a modern dark-theme fintech dashboard (Next.js + shadcn/ui) backed by a RESTful API (Express + PostgreSQL).
 
+## 🔗 Live Demo
+
+- **Frontend**: [https://mini-wallet-transaction-api.vercel.app/](https://mini-wallet-transaction-api.vercel.app/)
+- **Backend API**: [https://mini-wallet-transaction-api.onrender.com/](https://mini-wallet-transaction-api.onrender.com/)
+- **API Documentation**: [https://mini-wallet-transaction-api.onrender.com/api/docs](https://mini-wallet-transaction-api.onrender.com/api/docs)
+- **Health Check**: [https://mini-wallet-transaction-api.onrender.com/api/health](https://mini-wallet-transaction-api.onrender.com/api/health)
+
+## 🎥 Demo Video
+
+*(Placeholder for demo video)*
+
 ## 🏗️ Architecture
 
 ```

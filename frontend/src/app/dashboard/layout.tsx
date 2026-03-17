@@ -6,12 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
-import {
   SidebarProvider,
   SidebarInset,
   SidebarTrigger,
@@ -67,18 +61,11 @@ export default function DashboardLayout({
               {mounted ? (
                 <>
                   <ThemeToggle />
-                  <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="rounded-xl">
-                      <Avatar>
-                        <AvatarFallback className="bg-primary text-white">{userInitials}</AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem className="text-destructive">Log out</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  <Button variant="ghost" size="icon" className="rounded-xl">
+                    <Avatar>
+                      <AvatarFallback className="bg-primary text-white">{userInitials}</AvatarFallback>
+                    </Avatar>
+                  </Button>
                 </>
               ) : (
                 <>
