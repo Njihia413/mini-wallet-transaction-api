@@ -24,6 +24,7 @@ import {
   deposit,
   type Account,
   type Transaction,
+  type ApiError,
 } from "@/lib/api";
 import { formatCurrency, formatDate } from "@/lib/format";
 
@@ -48,13 +49,13 @@ export default function AccountDetailPage() {
       setAccount(accountRes.data);
       setTransactions(txnRes.data);
     } catch (err: unknown) {
-      const error = err as { error?: { code?: string } };
+      const error = err as { error?: { code?: string; message?: string } };
       if (error?.error?.code === "NOT_FOUND" || error?.error?.code === "INVALID_ID") {
         toast.error("Account not found");
         router.push("/dashboard/accounts");
         return;
       }
-      toast.error("Failed to load account");
+      toast.error(error?.error?.message || "Failed to load account");
     } finally {
       setLoading(false);
     }
@@ -80,8 +81,9 @@ export default function AccountDetailPage() {
       setDescription("");
       await fetchData();
     } catch (err: unknown) {
-      const error = err as { error?: { message?: string } };
-      toast.error(error?.error?.message || "Deposit failed");
+      const apiError = err as ApiError;
+      const message = apiError?.error?.message || "Deposit failed";
+      toast.error(message);
     } finally {
       setDepositing(false);
     }
