@@ -144,6 +144,18 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// ─── Welcome Route ───────────────────────────────────
+
+app.get('/', (_req: Request, res: Response) => {
+  res.json({
+    message: 'Welcome to the Mini Wallet Transaction API!',
+    status: 'Running',
+    documentation: '/api/docs',
+    healthCheck: '/api/health',
+    version: '1.0.0'
+  });
+});
+
 // ─── Health Check ────────────────────────────────────
 
 /**
