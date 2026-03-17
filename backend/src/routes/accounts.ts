@@ -128,7 +128,7 @@ router.get(
          ORDER BY created_at DESC`
       );
 
-      const accounts = result.rows.map((row) => ({
+      const accounts = result.rows.map((row: any) => ({
         id: row.id,
         name: row.name,
         type: row.type,
