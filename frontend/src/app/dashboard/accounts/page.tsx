@@ -23,7 +23,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Plus, Wallet, Loader2, PiggyBank, Briefcase, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
-import { getAccounts, createAccount, type Account } from "@/lib/api";
+import { getAccounts, createAccount, type Account, type ApiError } from "@/lib/api";
 import { formatCurrency, formatDate } from "@/lib/format";
 
 export default function AccountsPage() {
@@ -62,8 +62,9 @@ export default function AccountsPage() {
       setDialogOpen(false);
       await fetchAccounts();
     } catch (err: unknown) {
-      const error = err as { error?: { message?: string } };
-      toast.error(error?.error?.message || "Failed to create account");
+      const apiError = err as ApiError;
+      const message = apiError?.error?.message || "Failed to create account";
+      toast.error(message);
     } finally {
       setCreating(false);
     }
