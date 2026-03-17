@@ -130,6 +130,7 @@ app.use(cors({
     
     const allowedOrigins = [
       process.env.FRONTEND_URL || 'http://localhost:3000',
+      'https://mini-wallet-transaction-api.vercel.app',
       'http://localhost:5000',
       'http://0.0.0.0:5000',
     ];
