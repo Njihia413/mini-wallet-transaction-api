@@ -10,8 +10,8 @@ A full-stack wallet management application built for the **VunaPay Technical Ass
 - **Health Check**: [https://mini-wallet-transaction-api.onrender.com/api/health](https://mini-wallet-transaction-api.onrender.com/api/health)
 
 ## 🎥 Demo Video
+https://ik.imagekit.io/Njihia413/mini_wallet_transaction_api_demo.mp4
 
-*(Placeholder for demo video)*
 
 ## 🏗️ Architecture
 
