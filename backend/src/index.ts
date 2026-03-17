@@ -104,14 +104,8 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: process.env.RAILWAY_PUBLIC_DOMAIN 
-          ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` 
-          : 'http://localhost:5000',
+        url: process.env.RENDER_EXTERNAL_URL || 'http://localhost:5000',
         description: process.env.NODE_ENV === 'production' ? 'Production' : 'Development',
-      },
-      {
-        url: 'http://0.0.0.0:5000',
-        description: 'Local (0.0.0.0)',
       },
     ],
   },
