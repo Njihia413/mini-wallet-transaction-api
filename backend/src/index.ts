@@ -125,9 +125,10 @@ app.use(cors({
     const allowedOrigins = [
       process.env.FRONTEND_URL || 'http://localhost:3000',
       'https://mini-wallet-transaction-api.vercel.app',
+      process.env.RENDER_EXTERNAL_URL, // Allow the backend's own URL for Swagger
       'http://localhost:5000',
       'http://0.0.0.0:5000',
-    ];
+    ].filter(Boolean) as string[];
     
     if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
       callback(null, true);
