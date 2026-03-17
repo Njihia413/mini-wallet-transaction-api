@@ -269,7 +269,7 @@ async function testConnectionWithRetry(retries = 5, delayMs = 3000): Promise<voi
 }
 
 async function start() {
-  // Bind to port FIRST so Railway sees the service as alive
+  // Bind to port FIRST so Render sees the service as alive
   await new Promise<void>((resolve) => {
     app.listen(Number(PORT), '0.0.0.0', () => {
       console.log(`\n🚀 Mini Wallet API running on http://0.0.0.0:${PORT}`);
