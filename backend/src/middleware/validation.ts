@@ -15,7 +15,8 @@ export function validateBody(schema: z.ZodType) {
         field,
         message: (messages as string[])[0] || 'Invalid value',
       }));
-      return next(new ValidationError('Invalid request body', details));
+      const message = details.length > 0 ? details[0].message : 'Invalid request body';
+      return next(new ValidationError(message, details));
     }
     req.body = result.data;
     next();
@@ -34,7 +35,8 @@ export function validateQuery(schema: z.ZodType) {
         field,
         message: (messages as string[])[0] || 'Invalid value',
       }));
-      return next(new ValidationError('Invalid query parameters', details));
+      const message = details.length > 0 ? details[0].message : 'Invalid query parameters';
+      return next(new ValidationError(message, details));
     }
     Object.assign(req.query, result.data);
     next();
